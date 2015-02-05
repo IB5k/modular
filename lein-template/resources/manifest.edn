@@ -16,6 +16,14 @@
    :library-dependencies [[juxt.modular/bidi "0.7.3"]]
    :constructor modular.bidi/new-static-resource-service}
 
+  {:component :modular.template/static-template-model
+   :library-dependencies [[juxt.modular/template "0.6.2"]]
+   :constructor modular.template/new-static-template-model}
+
+  {:component :modular.template/aggregate-template-model
+   :library-dependencies [[juxt.modular/template "0.6.2"]]
+   :constructor modular.template/new-aggregate-template-model}
+
   ;; Project-local components
   {:component :website
    :library-dependencies [[hiccup "1.0.5"]
@@ -52,30 +60,56 @@
   {:module :component
    :library-dependencies [[com.stuartsierra/component "0.2.2"]]}
 
-  {:module :http-listener
+  {:module :http
    :components
    {:listener {:component :modular.http-kit/webserver
                :args [{:port [:http-server :port]} nil]}}}
 
-  {:module :modular-bidi-router
+  {:module :modular-bidi
    :components {:webrouter
                 {:component :modular.bidi/router}}
-   :dependencies {[:http-listener :listener] {:request-handler :webrouter}}
+   :dependencies {[:http :listener] {:request-handler :webrouter}}
    :dev-refers [bidi.bidi/match-route bidi.bidi/path-for]
    :dev-snippets [{:template "dev/routes.clj"}]}
 
-  {:module :simple-bidi-website
+  {:module :simple-bidi
    :components {:website
                 {:constructor {{name}}.simple-bidi-website/new-website}}
-   :dependencies {[:modular-bidi-router :webrouter] [:website]}
+   :dependencies {[:modular-bidi :webrouter] [:website]}
    :files [{:template "simple_bidi_website.clj"
             :target "src/{{sanitized}}/simple_bidi_website.clj"}]}
 
-  {:module :public-resources
-   :components {:public-resources
+  {:module :aggregate-template
+   :components {:model
+                {:component :modular.template/aggregate-template-model}}}
+
+  {:module :public
+   :components {:resources
                 {:component :modular.bidi/static-resource-service
-                 :args [:uri-context "" :resource-prefix "public"]}}
-   :dependencies {[:modular-bidi-router :webrouter] [:public-resources]}}]
+                 :args [:uri-context "/static" :resource-prefix "public"]}}
+   :dependencies {[:modular-bidi :webrouter] [:resources]}}
+
+  {:module :garden
+   :library-dependencies [[garden "1.2.5"]
+                          [trowel "0.1.0-SNAPSHOT"]]
+   :files [{:template "style.clj"
+            :target "src/{{sanitized}}/style.clj"}]}
+
+  {:module :styled-bidi
+   :components {:website
+                {:constructor {{name}}.website/new-website}
+                :html-template
+                {:component :modular.template/static-template-model
+                 :args [:title "Styled Bidi Website"
+                        :stylesheets ["/static/css/style.css"]]}}
+   :dependencies {[:modular-bidi :webrouter] [:website]
+                  [:aggregate-template :model] [:html-template]
+                  :website {:aggregate-template-model [:aggregate-template :model]}}
+   :library-dependencies [[hiccup "1.0.5"]]
+   :files [{:template "styled_bidi_website.clj"
+            :target "src/{{sanitized}}/website.clj"}]}
+  ]
+
 
  ;; These are the templates that the user chooses as the <app-template> argument in
  ;; lein new modular <project-name> <app-template>
@@ -83,7 +117,17 @@
  {"bidi-hello-world"
   {:description "A simple website that uses a bidi route"
    :modules #{:component
-              :http-listener
-              :modular-bidi-router
-              :simple-bidi-website}}}
+              :http
+              :modular-bidi
+              :simple-bidi}}
+
+  "styled-hello-world"
+  {:description "A simple website with garden generated styles"
+   :modules #{:component
+              :http
+              :modular-bidi
+              :aggregate-template
+              :styled-bidi
+              :public
+              :garden}}}
  }
