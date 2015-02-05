@@ -16,22 +16,6 @@
    :library-dependencies [[juxt.modular/bidi "0.7.3"]]
    :constructor modular.bidi/new-static-resource-service}
 
-  {:component :modular.bidi/redirect
-   :library-dependencies [[juxt.modular/bidi "0.7.3"]]
-   :constructor modular.bidi/new-redirect}
-
-  {:component :modular.template/static-template-model
-   :library-dependencies [[juxt.modular/template "0.6.2"]]
-   :constructor modular.template/new-static-template-model}
-
-  {:component :modular.template/aggregate-template-model
-   :library-dependencies [[juxt.modular/template "0.6.2"]]
-   :constructor modular.template/new-aggregate-template-model}
-
-  {:component :modular.clostache/templater
-   :library-dependencies [[juxt.modular/clostache "0.6.1"]]
-   :constructor modular.clostache/new-clostache-templater}
-
   ;; Project-local components
   {:component :website
    :library-dependencies [[hiccup "1.0.5"]
@@ -70,9 +54,6 @@
   {:module :component
    :library-dependencies [[com.stuartsierra/component "0.2.2"]]}
 
-  {:module :co-dependency
-   :library-dependencies [[malcolmsparks/co-dependency "0.1.5"]]}
-
   {:module :http-listener
    :components
    {:listener {:component :modular.http-kit/webserver
@@ -92,18 +73,6 @@
    :files [{:template "simple_bidi_website.clj"
             :target "src/{{sanitized}}/simple_bidi_website.clj"}]}
 
-  {:module :aggregate-template-model
-   :components {:template-model
-                {:component :modular.template/aggregate-template-model}}}
-
-  {:module :logback-logging
-   :library-dependencies [[org.clojure/tools.logging "0.2.6"]
-                          [ch.qos.logback/logback-classic "1.0.7" :exclusions [org.slf4j/slf4j-api]]
-                          [org.slf4j/jul-to-slf4j "1.7.2"]
-                          [org.slf4j/jcl-over-slf4j "1.7.2"]
-                          [org.slf4j/log4j-over-slf4j "1.7.2"]]
-   :files [{:template "logback.xml" :target "resources/logback.xml"}]}
-
   {:module :public-resources
    :components {:public-resources
                 {:component :modular.bidi/static-resource-service
@@ -113,5 +82,10 @@
  ;; These are the templates that the user chooses as the <app-template> argument in
  ;; lein new modular <project-name> <app-template>
  :application-templates
- {}
-}
+ {"bidi-hello-world"
+  {:description "A simple website that uses a bidi route"
+   :modules #{:component
+              :http-listener
+              :modular-bidi-router
+              :simple-bidi-website}}}
+ }
