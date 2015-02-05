@@ -44,11 +44,9 @@
                           [juxt.modular/maker "0.5.0"]
                           [juxt.modular/wire-up "0.5.0"]]
 
-   :files [{:template "project.clj" :target "project.clj"}
+   :files [{:template "build.boot" :target "build.boot"}
            {:template "system.clj" :target "src/{{sanitized}}/system.clj" :close-parens? true}
            {:template "main.clj" :target "src/{{sanitized}}/main.clj" :close-parens? true}
-           {:template "dev.clj" :target "dev/dev.clj"}
-           {:template "user.clj" :target "dev/user.clj"}
            {:file "gitignore" :target ".gitignore"}]}
 
   {:module :component
