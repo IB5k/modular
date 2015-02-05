@@ -6,6 +6,11 @@ pom.xml.asc
 *.jar
 *.class
 /.lein-*
-/.nrepl-port
-.hgignore
-.hg/
+/.nrepl-*
+.DS_Store
+.#*
+.idea*
+*.iml
+.boot/
+.repl
+gpg.edn
